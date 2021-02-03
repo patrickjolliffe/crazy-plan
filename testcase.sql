@@ -18,7 +18,7 @@ as
 select  ROWNUM id1,
         MOD(ROWNUM, 5) t1f
 from  dual connect by rownum <= 10;
-create index t1_t1m_t1id ON t1 (t1f, id1);
+create index t1_t1f_id1 ON t1 (t1f, id1);
 
 exec dbms_stats.gather_table_stats(null, 't1');
 
@@ -34,7 +34,7 @@ connect by level <= 10000;
 
 alter table t2 add constraint t2_id2 primary key (id2);
 
-create index t2_t2c1_t2c2_t2id on t2(t2f1, t2f2, id2);
+create index t2_t2f1_t2f2_id2 on t2(t2f1, t2f2, id2);
 
 exec dbms_stats.gather_table_stats(null, 't2')
 
