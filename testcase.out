@@ -1,0 +1,103 @@
+SQL> @testcase
+
+Table L dropped.
+
+
+Table L created.
+
+
+Table L altered.
+
+
+PL/SQL procedure successfully completed.
+
+
+Table T1 dropped.
+
+
+Table T1 created.
+
+
+Index T1_M_ID created.
+
+
+PL/SQL procedure successfully completed.
+
+
+Table T2 dropped.
+
+
+Table T2 created.
+
+
+Table T2 altered.
+
+
+Index T2_C1_C2_ID created.
+
+
+PL/SQL procedure successfully completed.
+
+
+Explained.
+
+
+                                                                                 PLAN_TABLE_OUTPUT
+__________________________________________________________________________________________________
+Plan hash value: 673786860
+
+-----------------------------------------------------------------------------------------------
+| Id  | Operation                       | Name        | Rows  | Bytes | Cost (%CPU)| Time     |
+-----------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                |             |     3 |    66 |    10   (0)| 00:00:01 |
+|   1 |  CONCATENATION                  |             |       |       |            |          |
+|   2 |   NESTED LOOPS                  |             |     1 |    22 |     4   (0)| 00:00:01 |
+|   3 |    NESTED LOOPS                 |             |     1 |    22 |     4   (0)| 00:00:01 |
+|   4 |     NESTED LOOPS                |             |     1 |    16 |     3   (0)| 00:00:01 |
+|*  5 |      INDEX RANGE SCAN           | T2_C1_C2_ID |     1 |    10 |     2   (0)| 00:00:01 |
+|   6 |      INLIST ITERATOR            |             |       |       |            |          |
+|*  7 |       INDEX RANGE SCAN          | T1_M_ID     |     1 |     6 |     1   (0)| 00:00:01 |
+|*  8 |     INDEX UNIQUE SCAN           | L_ID        |     1 |       |     0   (0)| 00:00:01 |
+|*  9 |    TABLE ACCESS BY INDEX ROWID  | L           |     1 |     6 |     1   (0)| 00:00:01 |
+|  10 |   NESTED LOOPS                  |             |     1 |    22 |     3   (0)| 00:00:01 |
+|  11 |    NESTED LOOPS                 |             |     1 |    12 |     2   (0)| 00:00:01 |
+|* 12 |     INDEX RANGE SCAN            | T1_M_ID     |     1 |     6 |     1   (0)| 00:00:01 |
+|  13 |     TABLE ACCESS BY INDEX ROWID | L           |     1 |     6 |     1   (0)| 00:00:01 |
+|* 14 |      INDEX UNIQUE SCAN          | L_ID        |     1 |       |     0   (0)| 00:00:01 |
+|* 15 |    INDEX RANGE SCAN             | T2_C1_C2_ID |     1 |    10 |     1   (0)| 00:00:01 |
+|  16 |   NESTED LOOPS                  |             |     1 |    22 |     3   (0)| 00:00:01 |
+|  17 |    NESTED LOOPS                 |             |     1 |    22 |     3   (0)| 00:00:01 |
+|  18 |     NESTED LOOPS                |             |     1 |    12 |     2   (0)| 00:00:01 |
+|* 19 |      INDEX RANGE SCAN           | T1_M_ID     |     1 |     6 |     1   (0)| 00:00:01 |
+|  20 |      TABLE ACCESS BY INDEX ROWID| L           |     1 |     6 |     1   (0)| 00:00:01 |
+|* 21 |       INDEX UNIQUE SCAN         | L_ID        |     1 |       |     0   (0)| 00:00:01 |
+|* 22 |     INDEX UNIQUE SCAN           | T2_ID       |     1 |       |     0   (0)| 00:00:01 |
+|* 23 |    TABLE ACCESS BY INDEX ROWID  | T2          |     1 |    10 |     1   (0)| 00:00:01 |
+-----------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   5 - access("T2"."C1"=103 AND "T2"."C2"=13)
+   7 - access("T1"."M"=0 OR "T1"."M"=1)
+       filter("T1"."M"=0 AND "T2"."C1">=9 AND "T2"."C1"<=10 OR "T1"."M"=1 AND
+              "T2"."C1"=103 AND "T2"."C2"=13)
+   8 - access("L"."ID"="T1"."ID")
+   9 - filter("L"."ID2"="T2"."ID")
+  12 - access("T1"."M"=1)
+       filter("T1"."M"=0 OR "T1"."M"=1)
+  14 - access("L"."ID"="T1"."ID")
+  15 - access("T2"."C1"=103 AND "T2"."C2"=13 AND "L"."ID2"="T2"."ID")
+       filter("T2"."C1">=9 AND "T2"."C1"<=10 AND (LNNVL("T2"."C1"=103) OR
+              LNNVL("T2"."C2"=13)))
+  19 - access("T1"."M"=0)
+       filter("T1"."M"=0 OR "T1"."M"=1)
+  21 - access("L"."ID"="T1"."ID")
+  22 - access("L"."ID2"="T2"."ID")
+  23 - filter("T2"."C1">=9 AND "T2"."C1">=9 AND "T2"."C1"<=10 AND "T2"."C1"<=10 AND
+              (LNNVL("T1"."M"=1) OR LNNVL("T2"."C1"=103) OR LNNVL("T2"."C2"=13)) AND
+              (LNNVL("T2"."C1"=103) OR LNNVL("T2"."C2"=13)))
+
+53 rows selected.
+
+SQL>
