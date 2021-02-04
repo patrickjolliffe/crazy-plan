@@ -38,9 +38,12 @@ create index t2_t2f1_t2f2_id2 on t2(t2f1, t2f2, id2);
 
 exec dbms_stats.gather_table_stats(null, 't2')
 
-explain plan for SELECT /*+ OPT_PARAM('_optimizer_cbqt_or_expansion' 'off') */ null FROM l, t1, t2 WHERE  
-(  ( t1.t1f = 0 AND t2.t2f1 BETWEEN 9 AND 10)       OR 
-   ( t1.t1f = 1 AND t2.t2f1 = 14 AND t2.t2f2 = 13  )   )  AND 
-    ( l.id1 = t1.id1 AND l.id2 = t2.id2 );
+explain plan for
+select /*+ OPT_PARAM('_optimizer_cbqt_or_expansion' 'off') */ null
+  from t1
+  join l  on l.id1 = t1.id1
+  join t2 on t2.id2 = l.id2
+  where  ( ( t1.t1f = 0 AND t2.t2f1 BETWEEN 9 AND 10)       OR 
+           ( t1.t1f = 1 AND t2.t2f1 = 14 AND t2.t2f2 = 13  )   );
 
 select * from dbms_xplan.display();
