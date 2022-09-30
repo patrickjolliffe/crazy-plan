@@ -2,12 +2,11 @@ drop table l purge;
 
 create table l nologging 
 as 
-select rownum id1, 
-       rownum id2
+select rownum id
 from dual 
 connect by level <= 10;
 
-alter table l add constraint l_id1 primary key(id1, id2);
+alter table l add constraint l_id primary key(id);
 
 exec dbms_stats.gather_table_stats(null, 'l');
 
@@ -42,7 +41,7 @@ exec dbms_stats.gather_table_stats(null, 't2')
 
 explain plan for
 select /*+ OPT_PARAM('_optimizer_cbqt_or_expansion' 'off') */ null
-  from t1 join l  on l.id1 = t1.id join t2 on t2.id = l.id1
+  from t1 join l  on l.id = t1.id join t2 on t2.id = l.id
   where  ( ( t1.t1f1 = 0 AND t2.t2f1 = 0)       OR 
            ( t1.t1f1 = 1 AND t2.t2f1 = 14 AND t2.t2f2 = 13  )   );
 
