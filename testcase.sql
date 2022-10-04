@@ -1,4 +1,3 @@
-
 drop table l purge;
 
 create table l nologging 
@@ -13,10 +12,9 @@ exec dbms_stats.gather_table_stats(null, 'l');
 
 drop table t1 purge;
 
-create table t1 (id number not null, t1f1 number, padding varchar2(255));
-
-insert into t1
-select /*+append*/ ROWNUM id,
+create table t1 nologging
+as
+select  ROWNUM id,
         mod(ROWNUM, 5) t1f1,
         rpad('X', 255, 'X') padding
 from  dual connect by rownum <= 10;
@@ -36,6 +34,7 @@ select ROWNUM  id,
 from    dual
 connect by level <= 10000;
 
+alter table t2 add constraint t2_pk primary key (id);
 
 create index t2_t2f1_t2f2_id2 on t2(t2f1, t2f2, id);
 
