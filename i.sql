@@ -1,8 +1,3 @@
-SET SQLFORMAT ANSICONSOLE
-SET PAGESIZE 0
-
-alter system flush shared_pool;
-
 drop table l purge;
 
 create table l nologging 
@@ -21,7 +16,7 @@ create table t1 (id number, x number);
 
 insert into t1 (id, x) 
 select  ROWNUM,
-        mod(ROWNUM, 2) 
+        mod(ROWNUM, 2) + 1
 from  dual connect by rownum <= 10;
 
 create index x_id ON t1 (x, id);
@@ -33,8 +28,8 @@ drop table t2 purge;
 create table t2 nologging 
 as 
 select ROWNUM  id, 
-        MOD(ROWNUM, 8) y,
-        0 z
+        MOD(ROWNUM, 8)+1 y,
+        1 z
 from    dual
 connect by level <= 10000;
 
