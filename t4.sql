@@ -5,9 +5,9 @@ alter system flush shared_pool;
 
 explain plan for
 select /*+ OPT_PARAM('_optimizer_cbqt_or_expansion' 'off') */ null
-  from x join y  on y.id = x.id join z on z.id = y.id
-  where  ( ( x.a = 0 AND z.b = 1               ) OR 
-           ( x.a = 1 AND z.b = 0 AND z.c = 0  )   );
+  from a join b  on a.id = b.id join c on c.id = b.id
+  where  ( ( a.m2 = 0 AND c.m10 = 1               ) OR 
+           ( a.m2 = 1 AND c.m10 = 0 AND c.m1 = 0  )   );
 
 select * from dbms_xplan.display();
 

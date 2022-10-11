@@ -1,44 +1,41 @@
-drop table a purge;
+drop table x purge;
 
-create table a (id number, m2 number);
+create table x (id number, a number, constraint x_id primary key(id));
 
-insert into a (id, m2) 
+insert into x (id, a) 
 select  ROWNUM,
         mod(ROWNUM, 2) + 1
 from  dual connect by rownum <= 10;
 
-create index x2_id ON a (m2, id);
+create index x_a_id ON x (a, id);
 
-exec dbms_stats.gather_table_stats(null, 'a');
+exec dbms_stats.gather_table_stats(null, 'x');
 
-drop table b purge;
+drop table y purge;
 
-create table b (id number not null);
+create table y (id number, constraint y_id primary key(id));
 
-insert into b (id) 
+insert into y (id) 
 select rownum
 from dual 
 connect by level <= 8;
 
-alter table b add constraint l_pk primary key(id);
 
-exec dbms_stats.gather_table_stats(null, 'b');
+exec dbms_stats.gather_table_stats(null, 'y');
 
-drop table c purge;
+drop table z purge;
 
-create table c (id number, m10 number, m1 number);
+create table z (id number, b number, c number, constraint z_id primary key(id));
 
-insert into c (id, m10, m1) 
+insert into z (id, b, c) 
 select ROWNUM,
        MOD(ROWNUM, 10)+1,
        1
 from    dual
 connect by level <= 10000;
 
-alter table c add constraint t2_pk primary key (id);
+create index z_b_c on z(b, c, id);
 
-create index y10_z1 on c(m10, m1, id);
-
-exec dbms_stats.gather_table_stats(null, 'c');
+exec dbms_stats.gather_table_stats(null, 'z');
 
 exit;
