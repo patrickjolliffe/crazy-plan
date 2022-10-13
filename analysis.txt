@@ -1,54 +1,66 @@
-------------------------------------------------------------------------------------------
-| Id  | Operation                     | Name     | Rows  | Bytes | Cost (%CPU)| Time     |
-------------------------------------------------------------------------------------------
-|   0 | SELECT STATEMENT              |          |     3 |    57 |     7   (0)| 00:00:01 |
-|   1 |  CONCATENATION                |          |       |       |            |          |
-|   2 |   NESTED LOOPS                |          |     1 |    19 |     3   (0)| 00:00:01 |
-|   3 |    NESTED LOOPS               |          |     1 |    19 |     3   (0)| 00:00:01 |
-|   4 |     NESTED LOOPS              |          |     1 |    13 |     2   (0)| 00:00:01 |
-|*  5 |      INDEX RANGE SCAN         | C_M10_M1 |     1 |    10 |     2   (0)| 00:00:01 |
-|*  6 |      INDEX UNIQUE SCAN        | B_ID     |     1 |     3 |     0   (0)| 00:00:01 |
-|*  7 |     INDEX UNIQUE SCAN         | A_ID     |     1 |       |     0   (0)| 00:00:01 |
-|*  8 |    TABLE ACCESS BY INDEX ROWID| A        |     1 |     6 |     1   (0)| 00:00:01 |
-|   9 |   NESTED LOOPS                |          |     1 |    19 |     2   (0)| 00:00:01 |
-|  10 |    NESTED LOOPS               |          |     1 |    13 |     2   (0)| 00:00:01 |
-|* 11 |     INDEX RANGE SCAN          | C_M10_M1 |     1 |    10 |     2   (0)| 00:00:01 |
-|* 12 |     INDEX UNIQUE SCAN         | B_ID     |     1 |     3 |     0   (0)| 00:00:01 |
-|* 13 |    INDEX RANGE SCAN           | A_M2_ID  |     1 |     6 |     0   (0)| 00:00:01 |
-|  14 |   NESTED LOOPS                |          |     1 |    19 |     2   (0)| 00:00:01 |
-|  15 |    NESTED LOOPS               |          |     1 |    19 |     2   (0)| 00:00:01 |
-|  16 |     NESTED LOOPS              |          |     1 |     9 |     1   (0)| 00:00:01 |
-|* 17 |      INDEX RANGE SCAN         | A_M2_ID  |     1 |     6 |     1   (0)| 00:00:01 |
-|* 18 |      INDEX UNIQUE SCAN        | B_ID     |     1 |     3 |     0   (0)| 00:00:01 |
-|* 19 |     INDEX UNIQUE SCAN         | C_ID     |     1 |       |     0   (0)| 00:00:01 |
-|* 20 |    TABLE ACCESS BY INDEX ROWID| C        |     1 |    10 |     1   (0)| 00:00:01 |
-------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+| Id  | Operation                     | Name   | Rows  | Bytes | Cost (%CPU)| Time     |
+----------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT              |        |     3 |    57 |     7   (0)| 00:00:01 |
+|   1 |  CONCATENATION                |        |       |       |            |          |
+|   2 |   NESTED LOOPS                |        |     1 |    19 |     3   (0)| 00:00:01 |
+|   3 |    NESTED LOOPS               |        |     1 |    19 |     3   (0)| 00:00:01 |
+|   4 |     NESTED LOOPS              |        |     1 |    13 |     2   (0)| 00:00:01 |
+|*  5 |      INDEX RANGE SCAN         | Z_B_C  |     1 |    10 |     2   (0)| 00:00:01 |
+|*  6 |      INDEX UNIQUE SCAN        | Y_ID   |     1 |     3 |     0   (0)| 00:00:01 |
+|*  7 |     INDEX UNIQUE SCAN         | X_ID   |     1 |       |     0   (0)| 00:00:01 |
+|*  8 |    TABLE ACCESS BY INDEX ROWID| X      |     1 |     6 |     1   (0)| 00:00:01 |
 
- (a.m2 = 0 AND c.m10 = 1) OR (a.m2 = 1 AND c.m10 = 0 AND c.m1 = 0) 
- (A0 AND B1)        OR (A1       AND B0        AND C0)
+|   9 |   NESTED LOOPS                |        |     1 |    19 |     2   (0)| 00:00:01 |
+|  10 |    NESTED LOOPS               |        |     1 |    13 |     2   (0)| 00:00:01 |
+|* 11 |     INDEX RANGE SCAN          | Z_B_C  |     1 |    10 |     2   (0)| 00:00:01 |
+|* 12 |     INDEX UNIQUE SCAN         | Y_ID   |     1 |     3 |     0   (0)| 00:00:01 |
+|* 13 |    INDEX RANGE SCAN           | X_A_ID |     1 |     6 |     0   (0)| 00:00:01 |
+
+|  14 |   NESTED LOOPS                |        |     1 |    19 |     2   (0)| 00:00:01 |
+|  15 |    NESTED LOOPS               |        |     1 |    19 |     2   (0)| 00:00:01 |
+|  16 |     NESTED LOOPS              |        |     1 |     9 |     1   (0)| 00:00:01 |
+|* 17 |      INDEX RANGE SCAN         | X_A_ID |     1 |     6 |     1   (0)| 00:00:01 |
+|* 18 |      INDEX UNIQUE SCAN        | Y_ID   |     1 |     3 |     0   (0)| 00:00:01 |
+|* 19 |     INDEX UNIQUE SCAN         | Z_ID   |     1 |       |     0   (0)| 00:00:01 |
+|* 20 |    TABLE ACCESS BY INDEX ROWID| Z      |     1 |    10 |     1   (0)| 00:00:01 |
+----------------------------------------------------------------------------------------
 
 
- ===>
-  (D AND E) AND ((A AND B) OR (C AND D AND E) AND (A OR C)
-+
-  (B or E) AND D
+(A0 AND B1) OR (A1 AND (B0 AND C0))
 
- ===>
-                                           c.m10 = 0 AND c.m1 = 0
-((a.m2 = 0 AND c.m10 = 1) OR (a.m2 = 1 AND c.m10 = 0 AND c.m1 = 0)) AND (a.m2 = 0 or a.m2 = 1)
-     +
-              (c.m10 = 1) OR                            (c.m1 = 0)  
-              (c.m10 = 0)
-                             (a.m2 = 1)
-(a.m2 = 0)                OR (am.2 = 1)
-     +
-(a.m2 = 0)
-(c.m10 = 1)
+    (B0 AND C0) AND                  (A0 AND B1 OR (A1 AND B0 AND C0) AND (A0 OR A1)
+UNION ALL
+NOT (B0 AND C0) AND                  (B1 AND C0) AND B0 AND A1 AND (A0 OR A1)
+UNION ALL
+NOT (B0 AND C0 AND B0 AND C0 AND A1) AND A0 AND (A0 OR A1) AND (B1 AND B1) 
 
-  17 - access("A"."M2"=0)
-       filter("A"."M2"=0 OR "A"."M2"=1)
-  
-  20 - filter("C"."M10"=1 AND "C"."M10"=1 AND (LNNVL("A"."M2"=1) OR
-              LNNVL("C"."M10"=0) OR LNNVL("C"."M1"=0)) AND (LNNVL("C"."M1"=0) OR
-              LNNVL("C"."M10"=0)))
+ 
+
+
+   (B0 AND C0)
+   ((A0 AND B1 OR A1 AND B0 AND C0) AND (A0 OR A1))
+
+   (B1 AND C0)
+   (B0 AND NOT (C0 AND B0))
+   (A1)
+   (A0 OR A1)
+       
+  (A0)
+  (A0 OR A1)
+  (B1 AND B1 AND NOT (A1 AND B0 AND C0 AND C0 AND B0)))
+
+     C0 AND B0 
+
+     NOT (C0 AND B0)
+
+     NOT (A1 AND C0 AND B0)
+
+
+
+
+  (A0 AND (A1 AND B0)) OR (A0 AND C0)
+
+(A0 AND B1 OR A1 AND B0 AND C0)
+
 
